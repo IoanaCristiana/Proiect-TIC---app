@@ -20,7 +20,8 @@
     </v-row>
 
     <div v-if="produseFiltrate.length === 0" class="text-center text-grey mb-6">
-      Nu am găsit niciun produs cu acest nume. 🕯️
+      <span v-if="products.length === 0">Nu exista produse momentan. Adauga-le din Admin!</span>
+      <span v-else>Nu am găsit niciun produs cu acest nume. 🕯️</span>
     </div>
 
     <v-row>
@@ -32,6 +33,7 @@
           :category="lumanare.category"
           :description="lumanare.description"
           :image="lumanare.image"
+          :stoc="lumanare.stoc" 
         />
       </v-col>
     </v-row>
@@ -39,16 +41,24 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue' 
+import { ref, computed, onMounted } from 'vue' 
 import ProductCard from '../components/ProductCard.vue'
 
-import img1 from '@/assets/lavanda.jpg'
-import img2 from '@/assets/pin+scortisoara.jpg'
-import img3 from '@/assets/vanilie+caramel.jpg'
-
 const textCautat = ref('')
+const products = ref([]) 
 
-// Logica ta e perfecta aici!
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/products')
+    if (response.ok) {
+      products.value = await response.json()
+      console.log("Produse incarcate:", products.value)
+    }
+  } catch (error) {
+    console.error("Eroare la încărcarea produselor:", error)
+  }
+})
+
 const produseFiltrate = computed(() => {
   if (!textCautat.value) return products.value
   
@@ -56,31 +66,4 @@ const produseFiltrate = computed(() => {
     produs.name.toLowerCase().includes(textCautat.value.toLowerCase())
   )
 })
-
-const products = ref([
-  {
-    id: 1,
-    name: 'Lavanda & Eucalipt',
-    price: 45,
-    category: 'Relaxare',
-    description: 'Perfecta pentru momentele de liniste. Calmeaza mintea si reduce stresul.',
-    image: img1
-  },
-  {
-    id: 2,
-    name: 'Vanilie & Caramel',
-    price: 55,
-    category: 'Gourmet',
-    description: 'O aroma dulce, calda si primitoare, ca o imbratisare în zilele reci.',
-    image: img3
-  },
-  {
-    id: 3,
-    name: 'Pin & Scortisoara',
-    price: 48,
-    category: 'Sarbatori',
-    description: 'Aduce mirosul proaspat de padure si magia iernii la tine in casa.',
-    image: img2
-  }
-])
 </script>

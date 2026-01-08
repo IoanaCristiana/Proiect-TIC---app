@@ -26,26 +26,13 @@
 
           <v-tooltip text="Panou Administrator" location="bottom" v-if="authStore.isAdmin">
             <template v-slot:activator="{ props }">
-              <v-btn 
-                v-bind="props"
-                icon="mdi-shield-crown" 
-                color="amber-darken-2" 
-                variant="tonal"
-                to="/admin"
-                class="mr-2"
-              ></v-btn>
+              <v-btn v-bind="props" icon="mdi-shield-crown" color="amber-darken-2" variant="tonal" to="/admin" class="mr-2"></v-btn>
             </template>
           </v-tooltip>
 
           <v-tooltip text="Deconectare" location="bottom">
             <template v-slot:activator="{ props }">
-              <v-btn 
-                v-bind="props"
-                icon="mdi-logout" 
-                color="grey-darken-1" 
-                variant="text"
-                @click="authStore.logout()"
-              ></v-btn>
+              <v-btn v-bind="props" icon="mdi-logout" color="grey-darken-1" variant="text" @click="authStore.logout()"></v-btn>
             </template>
           </v-tooltip>
         </div>
@@ -53,23 +40,20 @@
         <v-divider vertical inset class="mx-2"></v-divider>
 
         <v-btn icon="mdi-cart-outline" color="grey-darken-2" to="/cart">
-          <v-badge 
-            :content="cartStore.itemsCount" 
-            color="red" 
-            size="x-small" 
-            v-if="cartStore.itemsCount > 0"
-          >
+          <v-badge :content="cartStore.itemsCount" color="red" size="x-small" v-if="cartStore.itemsCount > 0">
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
-
       </template>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list>
         <v-list-item prepend-icon="mdi-home" title="Acasă" to="/"></v-list-item>
+        
+        <v-list-item prepend-icon="mdi-information-outline" title="Despre Noi" to="/about"></v-list-item>
+        
         <v-list-item prepend-icon="mdi-cart" title="Coșul Meu" to="/cart"></v-list-item>
         
         <v-divider class="my-2"></v-divider>
@@ -95,8 +79,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
-import { useAuthStore } from '@/stores/auth' 
+import { useAuthStore } from '@/stores/auth'
+
 const drawer = ref(false)
 const cartStore = useCartStore()
-const authStore = useAuthStore() 
+const authStore = useAuthStore()
 </script>

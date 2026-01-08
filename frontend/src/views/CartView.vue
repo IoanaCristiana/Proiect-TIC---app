@@ -1,59 +1,73 @@
 <template>
   <v-container class="py-10">
-    <h1 class="text-h4 mb-6">Coșul de Cumpărături</h1>
+    <h1 class="text-h4 mb-6">Coșul Meu</h1>
 
-    <div v-if="cartStore.items.length === 0" class="text-center py-10">
-      <v-icon size="100" color="grey-lighten-2">mdi-cart-off</v-icon>
-      <p class="text-h6 text-grey mt-4">Coșul tău este gol.</p>
-      <v-btn color="deep-purple-lighten-2" to="/" class="mt-4">Înapoi la Produse</v-btn>
-    </div>
+    <v-row v-if="cartStore.items.length > 0">
+     <v-col cols="12" md="8">
+        <v-card class="mb-4" v-for="item in cartStore.items" :key="item.id" elevation="2">
+          <div class="d-flex align-center pa-3">
+            
+            <v-avatar size="80" rounded="lg" class="mr-4">
+              <v-img :src="item.image" cover></v-img>
+            </v-avatar>
 
-    <v-row v-else>
-      <v-col cols="12" md="8">
-        <v-card elevation="2">
-          <v-table>
-            <thead>
-              <tr>
-                <th class="text-left">Produs</th>
-                <th class="text-left">Preț</th>
-                <th class="text-center">Acțiune</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in cartStore.items" :key="index">
-                <td>
-                  <div class="d-flex align-center py-2">
-                    <v-avatar rounded="0" size="50" class="mr-3">
-                      <v-img :src="item.image" cover></v-img>
-                    </v-avatar>
-                    {{ item.name }}
-                  </div>
-                </td>
-                <td>{{ item.price }} RON</td>
-                <td class="text-center">
-                  <v-btn icon="mdi-delete" size="small" color="red-lighten-2" variant="text" @click="cartStore.removeFromCart(item.id)"></v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
-          <v-divider></v-divider>
-          <div class="pa-4 text-right text-h6">
-            Total: <span class="text-deep-purple font-weight-bold">{{ cartStore.totalPrice }} RON</span>
-          </div>
-        </v-card>
+            <div class="flex-grow-1">
+              <div class="text-h6 font-weight-bold">{{ item.name }}</div>
+              <div class="text-subtitle-2 text-deep-purple">{{ item.price }} RON / buc</div>
+            </div>
+
+            <div class="d-flex align-center bg-grey-lighten-4 rounded-pill px-2 py-1 mx-4">
+              <v-btn 
+                icon="mdi-minus" 
+                variant="text" 
+                density="compact" 
+                size="small" 
+                color="grey-darken-2"
+                @click="cartStore.updateQuantity(item.id, -1)"
+              ></v-btn>
+              
+              <span class="mx-3 font-weight-bold text-body-1">{{ item.quantity }}</span>
+              
+              <v-btn 
+                icon="mdi-plus" 
+                variant="text" 
+                density="compact" 
+                size="small" 
+                :color="item.quantity >= item.stoc ? 'grey-lighten-1' : 'deep-purple'"
+                :disabled="item.quantity >= item.stoc"
+                @click="cartStore.updateQuantity(item.id, 1)"
+              ></v-btn>
+
+               <div v-if="item.quantity >= item.stoc" class="text-caption text-red position-absolute mt-6">
+                Max
+              </div>
+            </div> <v-btn icon="mdi-delete-outline" variant="text" color="red-lighten-2" @click="cartStore.removeFromCart(item.id)"></v-btn>
+          
+          </div> </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
-        <v-card class="pa-4" elevation="2">
-          <h3 class="text-h6 mb-4">Date Livrare</h3>
+        <v-card class="pa-6" elevation="3">
+          <h3 class="text-h6 mb-4 font-weight-bold">Sumar Comandă</h3>
+          
+          <div class="d-flex justify-space-between mb-2 text-grey-darken-1">
+            <span>Produse:</span>
+            <span>{{ cartStore.itemsCount }} buc.</span>
+          </div>
+
+          <v-divider class="my-3"></v-divider>
+
+          <div class="d-flex justify-space-between mb-6 align-center">
+            <span class="text-h6">Total:</span>
+            <span class="text-h5 font-weight-bold text-deep-purple">{{ cartStore.totalPrice }} RON</span>
+          </div>
+          
           <v-form @submit.prevent="trimiteComanda">
-            <v-text-field v-model="client.nume" label="Nume Complet" variant="outlined" required></v-text-field>
-            <v-text-field v-model="client.telefon" label="Telefon" variant="outlined" required></v-text-field>
-            <v-textarea v-model="client.adresa" label="Adresa de Livrare" variant="outlined" rows="3" required></v-textarea>
+            <v-text-field v-model="detalii.nume" label="Numele tău" variant="outlined" density="compact" required></v-text-field>
+            <v-text-field v-model="detalii.telefon" label="Telefon" variant="outlined" density="compact" required></v-text-field>
+            <v-textarea v-model="detalii.adresa" label="Adresa de livrare" variant="outlined" rows="3" density="compact" required></v-textarea>
             
-            <v-divider class="my-4"></v-divider>
-            
-            <v-btn block color="deep-purple-darken-1" size="large" type="submit" :loading="loading">
+            <v-btn type="submit" color="deep-purple-darken-1" block size="large" class="mt-2" :loading="loading">
               Trimite Comanda
             </v-btn>
           </v-form>
@@ -61,24 +75,25 @@
       </v-col>
     </v-row>
 
-    <v-snackbar v-model="snackbar" color="success">
-      Comanda a fost trimisă cu succes!
-      <template v-slot:actions>
-        <v-btn variant="text" @click="snackbar = false">Închide</v-btn>
-      </template>
-    </v-snackbar>
+    <div v-else class="text-center mt-10">
+      <v-icon size="80" color="grey-lighten-2">mdi-cart-off</v-icon>
+      <h2 class="text-h5 text-grey mt-4">Coșul este gol</h2>
+      <p class="text-grey mb-6">Nu ai adăugat încă nicio aromă minunată.</p>
+      <v-btn to="/" color="deep-purple" variant="flat" size="large" rounded="pill">Vezi Produsele</v-btn>
+    </div>
   </v-container>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useRouter } from 'vue-router'
 
 const cartStore = useCartStore()
+const router = useRouter()
 const loading = ref(false)
-const snackbar = ref(false)
 
-const client = reactive({
+const detalii = ref({
   nume: '',
   telefon: '',
   adresa: ''
@@ -86,38 +101,33 @@ const client = reactive({
 
 async function trimiteComanda() {
   if (cartStore.items.length === 0) return
-  
   loading.value = true
-  const comanda = {
-    client: client,
-    produse: cartStore.items,
+
+  const comandaNoua = {
+    client: detalii.value,
+    // Trimitem produsele cu tot cu cantitate
+    produse: cartStore.items, 
     total: cartStore.totalPrice,
     data: new Date().toISOString()
   }
 
   try {
-    
-  
     const response = await fetch('http://localhost:3000/api/comenzi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(comanda)
+      body: JSON.stringify(comandaNoua)
     })
 
     if (response.ok) {
-      //  golim cosul si aratam mesajul
-      cartStore.emptyCart()
-      snackbar.value = true
-      // Resetam formularul
-      client.nume = ''
-      client.telefon = ''
-      client.adresa = ''
+      alert('Comanda a fost trimisă cu succes! 🎉')
+      cartStore.clearCart() 
+      router.push('/') 
     } else {
-      alert('A aparut o eroare la server.')
+      alert('A apărut o eroare la trimitere.')
     }
   } catch (error) {
     console.error(error)
-    alert('Nu s-a putut conecta la server. Asigura-te ca backend-ul porneste!')
+    alert('Eroare conexiune server.')
   } finally {
     loading.value = false
   }

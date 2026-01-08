@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CartView from '../views/CartView.vue'
-import AdminView from '../views/AdminView.vue'
 import LoginView from '../views/LoginView.vue'
-import { useAuthStore } from '@/stores/auth'
-import AboutView from '../views/AboutView.vue'
+import AdminView from '../views/AdminView.vue' 
+import OrdersView from '../views/OrdersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,37 +19,21 @@ const router = createRouter({
       component: CartView
     },
     {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView
-    },
-    {
       path: '/login',
       name: 'login',
       component: LoginView
     },
     {
-     path: '/about',
-     name: 'about',
-     component: AboutView
+      path: '/admin',
+      name: 'admin',
+      component: AdminView 
+    },
+    {
+      path: '/istoric',
+      name: 'istoric',
+      component: OrdersView
     }
   ]
-})
-
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-
-  if (to.name === 'admin') {
-
-    if (authStore.isAdmin) {
-      next() 
-    } else {
-      next('/login')
-    }
-  } else {
-    
-    next()
-  }
 })
 
 export default router

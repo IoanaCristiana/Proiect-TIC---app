@@ -3,7 +3,7 @@
     <h1 class="text-h4 mb-6">Coșul Meu</h1>
 
     <v-row v-if="cartStore.items.length > 0">
-     <v-col cols="12" md="8">
+      <v-col cols="12" md="8">
         <v-card class="mb-4" v-for="item in cartStore.items" :key="item.id" elevation="2">
           <div class="d-flex align-center pa-3">
             
@@ -41,9 +41,12 @@
                <div v-if="item.quantity >= item.stoc" class="text-caption text-red position-absolute mt-6">
                 Max
               </div>
-            </div> <v-btn icon="mdi-delete-outline" variant="text" color="red-lighten-2" @click="cartStore.removeFromCart(item.id)"></v-btn>
+            </div> 
+
+            <v-btn icon="mdi-delete-outline" variant="text" color="red-lighten-2" @click="cartStore.removeFromCart(item.id)"></v-btn>
           
-          </div> </v-card>
+          </div> 
+        </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
@@ -87,9 +90,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth' 
 import { useRouter } from 'vue-router'
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const loading = ref(false)
 
@@ -105,10 +110,11 @@ async function trimiteComanda() {
 
   const comandaNoua = {
     client: detalii.value,
-    // Trimitem produsele cu tot cu cantitate
     produse: cartStore.items, 
     total: cartStore.totalPrice,
-    data: new Date().toISOString()
+    data: new Date().toISOString(),
+    userId: authStore.user ? authStore.user.id : null,
+    status: 'Nouă'
   }
 
   try {
@@ -118,12 +124,14 @@ async function trimiteComanda() {
       body: JSON.stringify(comandaNoua)
     })
 
+    const data = await response.json() 
+
     if (response.ok) {
       alert('Comanda a fost trimisă cu succes! 🎉')
       cartStore.clearCart() 
       router.push('/') 
     } else {
-      alert('A apărut o eroare la trimitere.')
+      alert(data.message || 'A apărut o eroare la trimitere.')
     }
   } catch (error) {
     console.error(error)

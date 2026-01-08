@@ -172,6 +172,59 @@ app.delete('/api/comenzi/:id', async (req, res) => {
   }
 });
 
+app.get('/api/comenzi', async (req, res) => {
+  try {
+    const snapshot = await db.collection('orders').get();
+    const comenzi = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    comenzi.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    res.status(200).send(comenzi);
+  } catch (error) {
+    console.error("Eroare la preluarea comenzilor:", error);
+    res.status(500).send({ message: 'Eroare server' });
+  }
+});
+
+app.put('/api/comenzi/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; 
+
+    await db.collection('orders').doc(id).update({ status });
+    
+    res.status(200).send({ message: 'Status actualizat!' });
+  } catch (error) {
+    console.error("Eroare actualizare status:", error);
+    res.status(500).send({ message: 'Eroare server' });
+  }
+});
+
+app.get('/api/comenzi-client/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const snapshot = await db.collection('orders')
+      .where('userId', '==', userId)
+      .get();
+
+    const comenzi = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    comenzi.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    res.send(comenzi);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Eroare server' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Serverul ruleaza pe http://localhost:${PORT}`);
 });

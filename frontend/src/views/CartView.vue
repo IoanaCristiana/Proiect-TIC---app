@@ -66,7 +66,7 @@
           </div>
           
           <v-form @submit.prevent="trimiteComanda">
-            <v-text-field v-model="detalii.nume" label="Numele tău" variant="outlined" density="compact" required></v-text-field>
+            <v-text-field v-model="detalii.nume" label="Numele tau" variant="outlined" density="compact" required></v-text-field>
             <v-text-field v-model="detalii.telefon" label="Telefon" variant="outlined" density="compact" required></v-text-field>
             <v-textarea v-model="detalii.adresa" label="Adresa de livrare" variant="outlined" rows="3" density="compact" required></v-textarea>
             
@@ -80,8 +80,8 @@
 
     <div v-else class="text-center mt-10">
       <v-icon size="80" color="grey-lighten-2">mdi-cart-off</v-icon>
-      <h2 class="text-h5 text-grey mt-4">Coșul este gol</h2>
-      <p class="text-grey mb-6">Nu ai adăugat încă nicio aromă minunată.</p>
+      <h2 class="text-h5 text-grey mt-4">Cosul este gol</h2>
+      <p class="text-grey mb-6">Nu ai adaugat inca nicio aroma minunata.</p>
       <v-btn to="/" color="deep-purple" variant="flat" size="large" rounded="pill">Vezi Produsele</v-btn>
     </div>
   </v-container>
@@ -127,11 +127,11 @@ async function trimiteComanda() {
     const data = await response.json() 
 
     if (response.ok) {
-      alert('Comanda a fost trimisă cu succes! 🎉')
+      alert('Comanda a fost trimisa cu succes!')
       cartStore.clearCart() 
       router.push('/') 
     } else {
-      alert(data.message || 'A apărut o eroare la trimitere.')
+      alert(data.message || 'A aparut o eroare la trimitere.')
     }
   } catch (error) {
     console.error(error)

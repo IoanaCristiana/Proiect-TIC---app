@@ -107,8 +107,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useAlertStore } from '@/stores/alert'
 
 const cartStore = useCartStore()
+const alertStore = useAlertStore()
 const products = ref([])
 const cautare = ref('')
 
@@ -125,14 +127,13 @@ const produseFiltrate = computed(() => {
   return products.value.filter(produs => {
     const textCautat = cautare.value.toLowerCase()
     const sePotrivesteNumele = produs.name.toLowerCase().includes(textCautat)
-    
     return sePotrivesteNumele
   })
 })
 
 function adaugaInCos(product) {
   cartStore.addToCart(product)
-  alert(`${product.name} a fost adaugat in cos!`) 
+  alertStore.triggerAlert(`${product.name} adaugat in cos!`, 'success')
 }
 </script>
 

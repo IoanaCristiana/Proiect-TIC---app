@@ -8,9 +8,13 @@
       <v-list density="compact" nav>
         <v-list-subheader>MENU</v-list-subheader>
         
-        <v-list-item prepend-icon="mdi-home" title="Acasă" value="home" to="/"></v-list-item>
-        <v-list-item prepend-icon="mdi-cart" title="Coșul Meu" value="cart" to="/cart"></v-list-item>
+        <v-list-item prepend-icon="mdi-home" title="Acasa" value="home" to="/"></v-list-item>
+        <v-list-item prepend-icon="mdi-cart" title="Cosul Meu" value="cart" to="/cart"></v-list-item>
+
        
+        
+        <v-list-item prepend-icon="mdi-information-outline" title="Despre Noi" value="about" to="/about"></v-list-item>
+        
         <v-list-item 
           v-if="authStore.user"
           prepend-icon="mdi-history" 
@@ -19,7 +23,7 @@
           to="/istoric"
           color="deep-purple"
         ></v-list-item>
-        
+
         <v-list-item 
           v-if="authStore.user && authStore.user.rol === 'admin'"
           prepend-icon="mdi-crown" 
@@ -53,7 +57,6 @@
       </template>
     </v-navigation-drawer>
 
-
     <v-app-bar flat class="border-b" color="white" elevation="1">
       
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -70,7 +73,7 @@
 
       <div v-if="authStore.user" class="d-flex align-center">
         <div class="d-none d-sm-flex flex-column align-end mr-4">
-          <span class="text-subtitle-2 font-weight-bold">Bună, {{ authStore.user.nume }}</span>
+          <span class="text-subtitle-2 font-weight-bold">Buna, {{ authStore.user.nume }}</span>
           <span class="text-caption text-grey">Cont Client</span>
         </div>
 
@@ -114,34 +117,48 @@
         </v-badge>
         <v-icon v-else>mdi-cart-outline</v-icon>
       </v-btn>
-
     </v-app-bar>
 
     <v-main>
       <router-view />
     </v-main>
 
+    <v-snackbar
+      v-model="alertStore.show"
+      :color="alertStore.color"
+      timeout="3000"
+      location="bottom right"
+    >
+      {{ alertStore.text }}
+      
+      <template v-slot:actions>
+        <v-btn variant="text" @click="alertStore.show = false">Inchide</v-btn>
+      </template>
+    </v-snackbar>
+
     <v-footer class="bg-grey-lighten-4 d-flex justify-center mt-10 py-4 text-caption text-grey">
-      2024 — Glow & Scent Handmade
+      2026 - Glow & Scent Handmade
     </v-footer>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue' 
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useAlertStore } from '@/stores/alert' 
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const alertStore = useAlertStore() 
 const router = useRouter()
 
 const drawer = ref(false)
 
 function handleLogout() {
   authStore.logout()
-  drawer.value = false 
+  drawer.value = false
   router.push('/')
 }
 </script>
